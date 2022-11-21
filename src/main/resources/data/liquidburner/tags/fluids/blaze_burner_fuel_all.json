@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#liquidburner:blaze_burner_fuel_special",
+    "#liquidburner:blaze_burner_fuel_regular"
+  ]
+}
