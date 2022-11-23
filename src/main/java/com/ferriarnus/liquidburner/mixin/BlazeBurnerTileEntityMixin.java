@@ -1,5 +1,6 @@
 package com.ferriarnus.liquidburner.mixin;
 
+import com.ferriarnus.liquidburner.BlazeTank;
 import com.ferriarnus.liquidburner.Tags;
 import com.simibubi.create.content.contraptions.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.contraptions.processing.burner.BlazeBurnerTileEntity;
@@ -15,7 +16,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.data.ForgeFluidTagsProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BlazeBurnerTileEntity.class)
 public abstract class BlazeBurnerTileEntityMixin extends SmartTileEntity {
     @Unique
-    FluidTank tank = new FluidTank(1000, fluid -> fluid.getFluid().is(Tags.Fuilds.BLAZE_BURNER_FUEL_ALL));
+    BlazeTank tank = new BlazeTank(1000, fluidStack -> tryConsumeLiquid(), fluid -> fluid.getFluid().is(Tags.Fuilds.BLAZE_BURNER_FUEL_ALL));
     @Unique
     LazyOptional<IFluidHandler> lazy = LazyOptional.of(() -> tank);
     @Shadow
