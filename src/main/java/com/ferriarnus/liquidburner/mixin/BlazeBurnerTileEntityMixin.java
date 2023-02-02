@@ -2,6 +2,9 @@ package com.ferriarnus.liquidburner.mixin;
 
 import com.ferriarnus.liquidburner.BlazeTank;
 import com.ferriarnus.liquidburner.Tags;
+import com.ferriarnus.liquidburner.recipe.FluidContainer;
+import com.ferriarnus.liquidburner.recipe.LiquidBurning;
+import com.ferriarnus.liquidburner.recipe.RecipeRegistry;
 import com.simibubi.create.content.contraptions.processing.burner.BlazeBurnerBlock;
 import com.simibubi.create.content.contraptions.processing.burner.BlazeBurnerTileEntity;
 import com.simibubi.create.foundation.tileEntity.SmartTileEntity;
@@ -18,15 +21,18 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(BlazeBurnerTileEntity.class)
 public abstract class BlazeBurnerTileEntityMixin extends SmartTileEntity {
@@ -38,6 +44,7 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartTileEntity {
     protected BlazeBurnerTileEntity.FuelType activeFuel;
     @Shadow
     protected int remainingBurnTime;
+    private LiquidBurning lb;
 
     public BlazeBurnerTileEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -45,6 +52,7 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartTileEntity {
 
     private void tryConsumeLiquid() {
         if (this.tank.getFluidAmount() == this.tank.getCapacity()) {
+            if (recipeFluids()) return;
             BlazeBurnerTileEntity.FuelType newFuel = BlazeBurnerTileEntity.FuelType.NONE;
             int newBurnTime = 0;
             if (this.tank.getFluid().getFluid().is(Tags.Fuilds.BLAZE_BURNER_FUEL_SPECIAL)) {
@@ -88,6 +96,66 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartTileEntity {
                 }
             }
         }
+    }
+
+    public boolean recipeFluids() {
+        FluidContainer container = new FluidContainer(this.tank.getFluid());
+        Optional<LiquidBurning> recipe = this.level.getRecipeManager().getRecipeFor(RecipeRegistry.LIQUIDBURNING.get(), container, this.level);
+        if (recipe.isPresent()) {
+            lb = recipe.get();
+            BlazeBurnerTileEntity.FuelType newFuel;
+            int newBurnTime;
+            if (lb.getSuperheattime() > 0) {
+                newBurnTime = lb.getSuperheattime();
+                newFuel = BlazeBurnerTileEntity.FuelType.SPECIAL;
+            } else {
+                newBurnTime = lb.getBurntime();
+                newFuel = BlazeBurnerTileEntity.FuelType.NORMAL;
+                lb = null;
+            }
+
+            if (newFuel.ordinal() < this.activeFuel.ordinal()) {
+                return true;
+            } else if (this.activeFuel == BlazeBurnerTileEntity.FuelType.SPECIAL && this.remainingBurnTime > 20) {
+                return true;
+            } else {
+                if (newFuel == this.activeFuel) {
+                    if (this.remainingBurnTime + newBurnTime > 10000) {
+                        return false;
+                    }
+
+                    newBurnTime = Mth.clamp(this.remainingBurnTime + newBurnTime, 0, 10000);
+                }
+                this.activeFuel = newFuel;
+                this.remainingBurnTime = newBurnTime;
+                if (this.level.isClientSide) {
+                    this.spawnParticleBurst(this.activeFuel == BlazeBurnerTileEntity.FuelType.SPECIAL);
+                    tank.drain(tank.getCapacity(), IFluidHandler.FluidAction.EXECUTE);
+                    return true;
+                } else {
+                    BlazeBurnerBlock.HeatLevel prev = this.getHeatLevelFromBlock();
+                    this.playSound();
+                    this.updateBlockState();
+                    if (prev != this.getHeatLevelFromBlock()) {
+                        this.level.playSound((Player)null, this.getBlockPos(), SoundEvents.BLAZE_AMBIENT, SoundSource.BLOCKS, 0.125F + this.level.random.nextFloat() * 0.125F, 1.15F - this.level.random.nextFloat() * 0.25F);
+                    }
+                    tank.drain(tank.getCapacity(), IFluidHandler.FluidAction.EXECUTE);
+                    return true;
+
+                }
+            }
+        }
+        lb = null;
+        return false;
+    }
+    @ModifyConstant(method = "tick", constant = @Constant(intValue = 5000), remap = false)
+    public int liquidburner$addBurntime(int constant) {
+        if (lb != null) {
+            int temp = lb.getBurntime();
+            lb = null;
+            return temp;
+        }
+        return constant;
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/simibubi/create/content/contraptions/processing/burner/BlazeBurnerTileEntity;updateBlockState()V", shift = At.Shift.BEFORE ,ordinal = 1), method = "tick", remap = false)
