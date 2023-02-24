@@ -1,6 +1,7 @@
 package com.ferriarnus.liquidburner.recipe;
 
 import com.ferriarnus.liquidburner.LiquidBurner;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;;
 import net.minecraft.world.item.crafting.Recipe;
@@ -14,7 +15,7 @@ import org.checkerframework.checker.units.qual.C;
 
 public class RecipeRegistry {
 
-    static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, LiquidBurner.MODID);
+    static final DeferredRegister<RecipeType<?>> RECIPES = DeferredRegister.create(Registry.RECIPE_TYPE_REGISTRY, LiquidBurner.MODID);
     static final DeferredRegister<RecipeSerializer<?>> SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, LiquidBurner.MODID);
 
     public static void register() {

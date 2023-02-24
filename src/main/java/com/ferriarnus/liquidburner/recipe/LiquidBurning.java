@@ -11,6 +11,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class LiquidBurning implements Recipe<FluidContainer> {
 
@@ -73,7 +74,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
         return burntime;
     }
 
-    public static class Serializer implements RecipeSerializer<LiquidBurning> {
+    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<LiquidBurning> {
 
         public Serializer() {
             
