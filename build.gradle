@@ -6,7 +6,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = '1.19.2-0.3'
+version = '1.19.2-0.3a'
 group = 'com.ferriarnus.liquidburner' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'liquidburner'
 
@@ -172,7 +172,7 @@ dependencies {
 
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-    implementation(fg.deobf("maven.modrinth:create:1.19.2-0.5.0.f"))
+    implementation(fg.deobf("maven.modrinth:create:1.19.2-0.5.0.g"))
 
     //implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
     //implementation fg.deobf("com.jozufozu.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}")

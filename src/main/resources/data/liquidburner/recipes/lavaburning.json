@@ -2,5 +2,5 @@
   "type": "liquidburner:liquidburning",
   "fluid": "minecraft:lava",
   "burntime": "20000",
-  "superheattime" : "100"
+  "superheattime" : "0"
 }
