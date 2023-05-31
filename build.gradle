@@ -6,7 +6,7 @@ plugins {
     id 'org.spongepowered.mixin' version '0.7.+'
 }
 
-version = '1.18.2-0.3'
+version = '1.18.2-0.4'
 group = 'com.ferriarnus.liquidburner' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'liquidburner'
 
@@ -163,7 +163,7 @@ dependencies {
     // Specify the version of Minecraft to use. If this is any group other than 'net.minecraft', it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency, and its patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.18.2-40.1.84'
+    minecraft 'net.minecraftforge:forge:1.18.2-40.2.4'
 
     // Real mod deobf dependency examples - these get remapped to your current mappings
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api") // Adds JEI API as a compile dependency
@@ -172,7 +172,7 @@ dependencies {
 
     // Examples using mod jars from ./libs
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
-    implementation(fg.deobf("maven.modrinth:create:1.18.2-0.5.0.e"))
+    implementation(fg.deobf("maven.modrinth:create:1.18.2-0.5.1.a"))
     implementation(fg.deobf("com.jozufozu.flywheel:flywheel-forge-${flywheel_minecraft_version}:${flywheel_version}"))
 
 
