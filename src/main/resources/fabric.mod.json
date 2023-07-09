@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "liquidburner",
+  "version": "${version}",
+  "name": "Liquid Burner",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "Me!"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/liquidburner/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.ferriarnus.liquidburner.LiquidBurner"
+    ]
+  },
+  "mixins": [
+    "mixins.liquidburner.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "minecraft": "~1.19.2",
+    "java": ">=17",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}

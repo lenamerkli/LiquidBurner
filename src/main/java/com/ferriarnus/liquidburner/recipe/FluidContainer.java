@@ -1,9 +1,10 @@
 package com.ferriarnus.liquidburner.recipe;
 
+import com.simibubi.create.foundation.fluid.FluidIngredient;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 
 public class FluidContainer implements Container {
 

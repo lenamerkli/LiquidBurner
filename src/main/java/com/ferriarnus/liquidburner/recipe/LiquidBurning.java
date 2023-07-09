@@ -2,7 +2,8 @@ package com.ferriarnus.liquidburner.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.core.RegistryAccess;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -10,8 +11,6 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.registries.ForgeRegistries;
 
 public class LiquidBurning implements Recipe<FluidContainer> {
 
@@ -37,7 +36,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
     }
 
     @Override
-    public ItemStack assemble(FluidContainer pContainer, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(FluidContainer pContainer) {
         return ItemStack.EMPTY;
     }
 
@@ -47,7 +46,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem() {
         return ItemStack.EMPTY;
     }
 
@@ -63,7 +62,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
 
     @Override
     public RecipeType<?> getType() {
-        return RecipeRegistry.LIQUIDBURNING.get();
+        return RecipeRegistry.LIQUIDBURNING;
     }
 
     public int getSuperheattime() {
@@ -72,6 +71,10 @@ public class LiquidBurning implements Recipe<FluidContainer> {
 
     public int getBurntime() {
         return burntime;
+    }
+
+    public FluidStack getFluid() {
+        return fluid;
     }
 
     public static class Serializer implements RecipeSerializer<LiquidBurning> {
@@ -83,10 +86,10 @@ public class LiquidBurning implements Recipe<FluidContainer> {
         @Override
         public LiquidBurning fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
             String rl = pSerializedRecipe.get("fluid").getAsString();
-            if (!ForgeRegistries.FLUIDS.containsKey(new ResourceLocation(rl))) {
+            if (!Registry.FLUID.containsKey(new ResourceLocation(rl))) {
                 throw new JsonSyntaxException("Unknown fluid '" + rl + "'");
             }
-            FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(new ResourceLocation(rl)), 1000);
+            FluidStack stack = new FluidStack(Registry.FLUID.get(new ResourceLocation(rl)), 1000);
             int burntime = pSerializedRecipe.get("burntime").getAsInt();
             int superheattime = 0;
             if (pSerializedRecipe.has("superheattime")) {
@@ -98,10 +101,10 @@ public class LiquidBurning implements Recipe<FluidContainer> {
         @Override
         public LiquidBurning fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             ResourceLocation rl = pBuffer.readResourceLocation();
-            if (!ForgeRegistries.FLUIDS.containsKey(rl)) {
+            if (!Registry.FLUID.containsKey(rl)) {
                 throw new JsonSyntaxException("Unknown fluid '" + rl + "'");
             }
-            FluidStack stack = new FluidStack(ForgeRegistries.FLUIDS.getValue(rl), 1000);
+            FluidStack stack = new FluidStack(Registry.FLUID.get(rl), 1000);
             int burntime = pBuffer.readInt();
             int superheattime = pBuffer.readInt();
             return new LiquidBurning(stack, burntime, superheattime, pRecipeId);
@@ -109,7 +112,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, LiquidBurning pRecipe) {
-            pBuffer.writeResourceLocation(ForgeRegistries.FLUIDS.getKey(pRecipe.fluid.getFluid()));
+            pBuffer.writeResourceLocation(Registry.FLUID.getKey(pRecipe.fluid.getFluid()));
             pBuffer.writeInt(pRecipe.burntime);
             pBuffer.writeInt(pRecipe.superheattime);
         }
