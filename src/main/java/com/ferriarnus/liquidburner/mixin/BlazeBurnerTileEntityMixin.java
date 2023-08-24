@@ -167,7 +167,8 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartBlockEntity {
 
     @Inject(at = @At("HEAD"), method = "read", remap = false)
     public void liquidburner$appendRead(CompoundTag compound, boolean clientPacket, CallbackInfo ci) {
-        this.tank.readFromNBT(compound.getCompound("tank"));
+        if (compound.contains("tank"))
+            this.tank.readFromNBT(compound.getCompound("tank"));
     }
 
     @Inject(at = @At("HEAD"), method = "write", remap = false)
