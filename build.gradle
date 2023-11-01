@@ -53,18 +53,19 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "maven.modrinth:create-fabric:ojGZcMyX"
+    modImplementation "maven.modrinth:create-fabric:0.5.1-d-build.1161+mc1.20.1"
 
     modImplementation("com.tterrag.registrate_fabric:Registrate:$registrate_version") {
         exclude(group: "io.github.fabricators_of_create") // avoid duplicate Porting Lib
     }
 
     for (String module in port_lib_modules.split(",")) {
-        modImplementation "io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version+$minecraft_version"
+        modImplementation "io.github.fabricators_of_create.Porting-Lib:$module:$port_lib_version"
     }
 
     implementation "com.electronwill.night-config:core:$night_config_version"

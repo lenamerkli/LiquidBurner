@@ -4,6 +4,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +39,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
     }
 
     @Override
-    public ItemStack assemble(FluidContainer pContainer) {
+    public ItemStack assemble(FluidContainer pContainer, RegistryAccess access) {
         return ItemStack.EMPTY;
     }
 
@@ -46,7 +49,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess access) {
         return ItemStack.EMPTY;
     }
 
@@ -86,10 +89,10 @@ public class LiquidBurning implements Recipe<FluidContainer> {
         @Override
         public LiquidBurning fromJson(ResourceLocation pRecipeId, JsonObject pSerializedRecipe) {
             String rl = pSerializedRecipe.get("fluid").getAsString();
-            if (!Registry.FLUID.containsKey(new ResourceLocation(rl))) {
+            if (!BuiltInRegistries.FLUID.containsKey(new ResourceLocation(rl))) {
                 throw new JsonSyntaxException("Unknown fluid '" + rl + "'");
             }
-            FluidStack stack = new FluidStack(Registry.FLUID.get(new ResourceLocation(rl)), 1000);
+            FluidStack stack = new FluidStack(BuiltInRegistries.FLUID.get(new ResourceLocation(rl)), 1000);
             int burntime = pSerializedRecipe.get("burntime").getAsInt();
             int superheattime = 0;
             if (pSerializedRecipe.has("superheattime")) {
@@ -101,10 +104,10 @@ public class LiquidBurning implements Recipe<FluidContainer> {
         @Override
         public LiquidBurning fromNetwork(ResourceLocation pRecipeId, FriendlyByteBuf pBuffer) {
             ResourceLocation rl = pBuffer.readResourceLocation();
-            if (!Registry.FLUID.containsKey(rl)) {
+            if (!BuiltInRegistries.FLUID.containsKey(rl)) {
                 throw new JsonSyntaxException("Unknown fluid '" + rl + "'");
             }
-            FluidStack stack = new FluidStack(Registry.FLUID.get(rl), 1000);
+            FluidStack stack = new FluidStack(BuiltInRegistries.FLUID.get(rl), 1000);
             int burntime = pBuffer.readInt();
             int superheattime = pBuffer.readInt();
             return new LiquidBurning(stack, burntime, superheattime, pRecipeId);
@@ -112,7 +115,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
 
         @Override
         public void toNetwork(FriendlyByteBuf pBuffer, LiquidBurning pRecipe) {
-            pBuffer.writeResourceLocation(Registry.FLUID.getKey(pRecipe.fluid.getFluid()));
+            pBuffer.writeResourceLocation(BuiltInRegistries.FLUID.getKey(pRecipe.fluid.getFluid()));
             pBuffer.writeInt(pRecipe.burntime);
             pBuffer.writeInt(pRecipe.superheattime);
         }

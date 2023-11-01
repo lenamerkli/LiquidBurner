@@ -1,6 +1,7 @@
 package com.ferriarnus.liquidburner;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.TagKey;
@@ -20,7 +21,7 @@ public class Tags {
         public static final TagKey<Fluid> BLAZE_BURNER_FUEL_ALL = tag("blaze_burner_fuel_all");
 
         private static TagKey<Fluid> tag(String name) {
-            return TagKey.create(Registry.FLUID_REGISTRY, new ResourceLocation(LiquidBurner.MODID, name));
+            return TagKey.create(Registries.FLUID, new ResourceLocation(LiquidBurner.MODID, name));
         }
     }
 }
