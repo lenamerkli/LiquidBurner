@@ -73,6 +73,10 @@ public class LiquidBurning implements Recipe<FluidContainer> {
         return burntime;
     }
 
+    public FluidStack getFluid() {
+        return fluid;
+    }
+
     public static class Serializer implements RecipeSerializer<LiquidBurning> {
 
         public Serializer() {

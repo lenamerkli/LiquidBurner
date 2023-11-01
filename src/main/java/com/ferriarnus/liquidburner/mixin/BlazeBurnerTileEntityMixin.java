@@ -20,6 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,23 +34,26 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Mixin(BlazeBurnerBlockEntity.class)
 public abstract class BlazeBurnerTileEntityMixin extends SmartBlockEntity {
     @Unique
-    BlazeTank tank = new BlazeTank(1000, fluidStack -> tryConsumeLiquid(), fluid -> fluid.getFluid().is(Tags.Fuilds.BLAZE_BURNER_FUEL_ALL));
+    BlazeTank tank = new BlazeTank(1000, fluidStack -> tryConsumeLiquid(), getFluidStackPredicate());
     @Unique
     LazyOptional<IFluidHandler> lazy = LazyOptional.of(() -> tank);
     @Shadow
     protected BlazeBurnerBlockEntity.FuelType activeFuel;
     @Shadow
     protected int remainingBurnTime;
+    @Unique
     private LiquidBurning lb;
 
     public BlazeBurnerTileEntityMixin(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
+    @Unique
     private void tryConsumeLiquid() {
         if (this.tank.getFluidAmount() == this.tank.getCapacity()) {
             if (recipeFluids()) return;
@@ -98,8 +102,11 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartBlockEntity {
         }
     }
 
+    @Unique
     public boolean recipeFluids() {
         FluidContainer container = new FluidContainer(this.tank.getFluid());
+        if (this.level == null)
+            return false;
         Optional<LiquidBurning> recipe = this.level.getRecipeManager().getRecipeFor(RecipeRegistry.LIQUIDBURNING.get(), container, this.level);
         if (recipe.isPresent()) {
             lb = recipe.get();
@@ -148,6 +155,14 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartBlockEntity {
         lb = null;
         return false;
     }
+
+    @Unique
+    private Predicate<FluidStack> getFluidStackPredicate() {
+        if (this.level == null)
+            return fluidStack -> true;
+        return fluid -> this.level.getRecipeManager().getAllRecipesFor(RecipeRegistry.LIQUIDBURNING.get()).stream().anyMatch(r -> r.getFluid().isFluidEqual(fluid));
+    }
+
     @ModifyConstant(method = "tick", constant = @Constant(intValue = 5000), remap = false)
     public int liquidburner$addBurntime(int constant) {
         if (lb != null) {
