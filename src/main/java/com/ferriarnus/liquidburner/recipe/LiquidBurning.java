@@ -2,6 +2,7 @@ package com.ferriarnus.liquidburner.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +37,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
     }
 
     @Override
-    public ItemStack assemble(FluidContainer pContainer) {
+    public ItemStack assemble(FluidContainer pContainer, RegistryAccess p_267052_) {
         return ItemStack.EMPTY;
     }
 
@@ -46,7 +47,7 @@ public class LiquidBurning implements Recipe<FluidContainer> {
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess p_267052_) {
         return ItemStack.EMPTY;
     }
 
