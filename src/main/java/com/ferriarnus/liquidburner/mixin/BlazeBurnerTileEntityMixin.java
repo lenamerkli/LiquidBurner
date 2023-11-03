@@ -58,6 +58,9 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartBlockEntity implem
             return false;
         }
         FluidContainer container = new FluidContainer(this.tank.getFluid());
+        if (level == null) {
+            return false;
+        }
         Optional<LiquidBurning> recipe = this.level.getRecipeManager().getRecipeFor(RecipeRegistry.LIQUIDBURNING, container, this.level);
         if (recipe.isPresent()) {
             lb = recipe.get();
@@ -106,6 +109,9 @@ public abstract class BlazeBurnerTileEntityMixin extends SmartBlockEntity implem
 
     @Unique
     private Predicate<FluidStack> getFluidStackPredicate() {
+        if (level == null) {
+            return fluid -> true;
+        }
         return fluid -> this.level.getRecipeManager().getAllRecipesFor(RecipeRegistry.LIQUIDBURNING).stream().anyMatch(r -> r.getFluid().isFluidEqual(fluid));
     }
 
